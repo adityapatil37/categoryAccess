@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Admin Page</h1>
+    <div>
+        <h2>Create Category</h2>
+        <form id="createCategoryForm">
+            <input type="text" id="categoryName" placeholder="Category Name" required>
+            <button type="submit">Create</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Assign Permissions</h2>
+        <form id="assignPermissionsForm">
+            <select id="categorySelect" required>
+                <!-- Categories will be loaded dynamically -->
+            </select>
+            <input type="text" id="permissionName" placeholder="Permission Name" required>
+            <button type="submit">Assign</button>
+        </form>
+    </div>
+
+    <script>
+        // Load categories and populate the select element
+        function loadCategories() {
+            $.get('/categories', function(data) {
+                $('#categorySelect').empty();
+                data.forEach(category => {
+                    $('#categorySelect').append(`<option value="${category.id}">${category.name}</option>`);
+                });
+            });
+        }
+
+        $(document).ready(function() {
+            // Load categories when the page loads
+            loadCategories();
+
+            // Handle category creation
+            $('#createCategoryForm').on('submit', function(e) {
+                e.preventDefault();
+                const categoryName = $('#categoryName').val();
+                $.post('/create-category', { name: categoryName }, function() {
+                    alert('Category created successfully');
+                    loadCategories(); // Refresh categories
+                });
+            });
+
+            // Handle permission assignment
+            $('#assignPermissionsForm').on('submit', function(e) {
+                e.preventDefault();
+                const categoryId = $('#categorySelect').val();
+                const permissionName = $('#permissionName').val();
+                $.post('/assign-permission', { categoryId, name: permissionName }, function() {
+                    alert('Permission assigned successfully');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

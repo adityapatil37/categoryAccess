@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create User</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Create User</h1>
+    <form id="createUserForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <select id="categorySelect" required>
+            <!-- Categories will be loaded dynamically -->
+        </select>
+        <button type="submit">Create</button>
+    </form>
+
+    <script>
+        // Load categories and populate the select element
+        function loadCategories() {
+            $.get('/categories', function(data) {
+                $('#categorySelect').empty();
+                data.forEach(category => {
+                    $('#categorySelect').append(`<option value="${category.id}">${category.name}</option>`);
+                });
+            });
+        }
+
+        $(document).ready(function() {
+            // Load categories when the page loads
+            loadCategories();
+
+            // Handle user creation
+            $('#createUserForm').on('submit', function(e) {
+                e.preventDefault();
+                const username = $('#username').val();
+                const password = $('#password').val();
+                const categoryId = $('#categorySelect').val();
+
+                $.post('/create-user', { username, password, categoryId }, function() {
+                    alert('User created successfully');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
